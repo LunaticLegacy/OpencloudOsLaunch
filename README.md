@@ -1,6 +1,6 @@
 ## Information:
 
-Author: [月と猫 - LunaNeko](https://github.com/LunaticLegacy)🐾
+Author: [月と猫 - LunaNeko](https://github.com/LunaticLegacy)  *Nya~ 🐾*
 
 GitHub: **LunaticLegacy**, Gitee: **LunaNeko**
 
