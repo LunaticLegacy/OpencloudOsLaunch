@@ -1,39 +1,73 @@
-## Information:
+# 🚀 OpenCloud OS RISC-V Boot Project
 
 Author: [月と猫 - LunaNeko](https://github.com/LunaticLegacy)  *Nya~ 🐾*
 
 GitHub: **LunaticLegacy**, Gitee: **LunaNeko**
 
-This environment is based on the [RV-SP](https://github.com/riscv-non-isa/riscv-platforms/tree/master/rv-sp) project, and all of my work were uploaded in [my fork and my branch](https://github.com/LunaticLegacy/rv-sp-test-mod/tree/lunanekos_working).
+> A bootable RISC-V Linux environment built with ❤️ *(and several days in cafe)* , based on [RV-SP](https://github.com/riscv-non-isa/riscv-platforms/tree/master/rv-sp). <br>
+> My personal fork and working branch: [🔗](https://github.com/LunaticLegacy/rv-sp-test-mod/tree/lunanekos_working) <br>
+> This environment is based on the [RV-SP](https://github.com/riscv-non-isa/riscv-platforms/tree/master/rv-sp) project, and all of my work were uploaded in [my fork and my branch](https://github.com/LunaticLegacy/rv-sp-test-mod/tree/lunanekos_working).
 
-## Requirements
+## 📦 Requirements
 - QEMU ≥ 8.0 with RISC-V support
 - Buildroot
 - GCC toolchain for RISC-V (e.g. `riscv64-linux-gnu-gcc`)
-- EDK2 (source code, or prebuilt file in m)
+- GCC or Clang toolchain for your **local arch** *(Honestly I didn't try compiling QEMU via Clang, I did this in GCC instead.)*
+- EDK2 (source or prebuilt, see UEFI section)
 
-## How to use:
-1. Compile a QEMU RISC-V platform. *Let's warm up with this, shall we? I don't believe you're unable to do such casual thing.*
-2. Compile your own Opencloud OS kernel with this [source code](https://gitee.com/lunaneko/OpenCloudOS-Kernel.git) in Gitee with [my config](config). *(Rename this file into: `.config` please, for GitHub will automatically hide the file that name starts with a dot "`.`".)*
-3. Compile your own GRUB and write your own grub.cfg, or use [mine](grub.cfg).
-4. Make your own filesystem via buildroot, then make an .img file, partition it, then put everything inside that .img. *(It's a little complex, ask for ChatGPT to do it. TIP: `fdisk`. Remember to set 2 partitions and make the 1st as **FAT32** and make the second as **EXT4** (or based on your kernel) )*
-5. Compile your own EDK2 RISC-V UEFI, or use the provided UEFI in this repo *(after you TRUNCATED both of them into 32MB)*.
-6. For Linux, run `qemu_run_virt.sh`. for Windows, run `qemu_run_virt.bat`.
+## 🔧 How to use:
+### Step 1. Compile QEMU for RISC-V
+> Let’s warm up with this. I *believe* you can do this basic task without breaking a sweat.
 
-*You're recommended to modify these script to run your own compiled QEMU, default QEMU directory was set as `./qemu/build/qemu-system-riscv64`. The file I'd given is working in MY environment.*
+You may use a custom build of QEMU, placed at `./qemu/build/qemu-system-riscv64` by default. Feel free to adjust path in the run scripts.
 
-- Be careful: **DON'T delete** any of file in folder `UEFI`. These are my own-compiled UEFI firmware. *(You can compile it by yourself, too)*
-- Step 2 to step 5 can be simply replaced by 🔜 [DOWNLOAD]() my own file. *(Coming soon! This link is still waiting for be fulfilled. I will do it at the day my Release ver of system were published via Opencloud OS Official.)*
+### Step 2. Build the Kernel
+Use [this kernel repo](https://gitee.com/lunaneko/OpenCloudOS-Kernel.git) in Gitee and apply my config file in `config/`.
+
+- ⚠️ Please rename the config file to `.config` before building. GitHub hides dotfiles.
+
+### Step 3. Compile GRUB and Write grub.cfg
+Use your own GRUB build or [my config](grub.cfg) if you're lazy (like me sometimes).
+
+### Step 4. Build Filesystem via Buildroot
+Build a root filesystem and create an `.img` file:
+
+- Use `fdisk` to create **2 partitions**:
+  - Partition 1: **FAT32** (for `/boot`)
+  - Partition 2: **EXT4** (for `/`)
+- Mount each partition and place files accordingly:
+  - FAT32 partition → `/boot` with `Image` (kernel)
+  - EXT4 partition → rootfs contents from Buildroot
+
+> TIP: if you're stuck, just ask ChatGPT or other LLMs to help script this.
+
+### Step 5. Prepare UEFI (EDK2)
+You can either:
+- Compile your own EDK2 UEFI build
+- OR use my precompiled binaries from the `UEFI/` folder
+
+> ⚠️ You MUST **truncate** each UEFI firmware binary to 32MB.  
+> Use the `truncate_uefi.sh` script provided to truncate your UEFI firmware if you feel it's complex.
+
+### Step 6. Boot!
+- For **Linux**: Run `qemu_run_virt.sh`  
+- For **Windows**: Run `qemu_run_virt.bat`
+
+You may need to edit the scripts to match your environment (especially QEMU path).
+
+## Notes:
+> Please DO NOT delete anything in `UEFI/`. These are the compiled EDK2 UEFI binaries. <br>
+> Step 2 to step 5 can be simply replaced by 🔜 [DOWNLOAD]() my own file. *(Coming soon! This link is still waiting for be fulfilled. I will do it at the day my Release ver of system were published via Opencloud OS Official.)*
 
 ## Some details:
 
 ### What's inside my .iso file:
 ```bash
-luna@LAPTOP-O7KSPF9L:~/dnf/toml11/toml11/build$ ls /mnt/boot
+luna@my_device:~/dnf/toml11/toml11/build$ ls /mnt/boot
 EFI  Image
-luna@LAPTOP-O7KSPF9L:~/dnf/toml11/toml11/build$ ls /mnt/rootfs
+luna@my_device:~/dnf/toml11/toml11/build$ ls /mnt/rootfs
 bin  boot  dev  etc  home  lib  lib64  linuxrc  lost+found  media  mnt  opt  proc  root  run  sbin  share  srv  sys  tmp  usr  var
-luna@LAPTOP-O7KSPF9L:~/dnf/toml11/toml11/build$
+luna@my_device:~/dnf/toml11/toml11/build$
 ```
 
 `Image` in dir `/mnt/boot` *(the 1st partition, fat32)* is my OS kernel. `/mnt/rootfs` *(the 2nd partition, ext4)* is my filesystem generated via buildroot.
