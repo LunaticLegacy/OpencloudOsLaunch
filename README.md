@@ -33,8 +33,9 @@ Use your own GRUB build or [my config](grub.cfg) if you're lazy (like me sometim
 Build a root filesystem and create an `.img` file:
 
 - Use `fdisk` to create **2 partitions**:
-  - Partition 1: **FAT32** (for `/boot`)
-  - Partition 2: **EXT4** (for `/`)
+  - Partition 1: **FAT32** (for GRUB and kernel)
+  - Partition 2: **EXT4** (for rootfs)
+> *(According to the UEFI specification, the EFI System Partition must be formatted as VFAT (typically FAT32), and it stores the GRUB EFI executable. However, the Linux kernel and root filesystem can reside on a different partition with another filesystem like ext4.)*
 - Mount each partition and place files accordingly:
   - FAT32 partition → `/boot` with `Image` (kernel)
   - EXT4 partition → rootfs contents from Buildroot
