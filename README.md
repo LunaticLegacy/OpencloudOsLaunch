@@ -16,18 +16,45 @@ GitHub: **LunaticLegacy**, Gitee: **LunaNeko**
 - EDK2 (source or prebuilt, see UEFI section)
 
 ## 🔧 How to use:
-### Step 1. Compile QEMU for RISC-V
-> Let’s warm up with this. I *believe* you can do this basic task without breaking a sweat.
+### Step 1. Get your own QEMU for RISC-V
+*Let’s warm up with this. I believe you can do this basic task without breaking a sweat.*
 
 You may use a custom build of QEMU, placed at `./qemu/build/qemu-system-riscv64` by default. Feel free to adjust path in the run scripts.
 
-### Step 2. Build the Kernel
-Use [this kernel repo](https://gitee.com/lunaneko/OpenCloudOS-Kernel.git) in Gitee and apply my config file in `config/`.
+If you feel it very complex to compile, feel free to download a pre-built binary in QEMU official website. 
 
-- ⚠️ Please rename the config file to `.config` before building. GitHub hides dotfiles.
+- **For Windows**:  
+  Download from [Stefan Weil's QEMU builds](https://qemu.weilnetz.de/).  
+  After downloading, make sure `qemu-system-riscv64.exe` is in your `PATH`, or adjust the script accordingly.
+
+- **For Linux**:  
+  You can install QEMU with RISC-V support via your distribution’s package manager.  
+  In my environment, I use **APT**:
+
+  ```bash
+  sudo apt update
+  sudo apt install qemu-system-misc qemu-user-static
+  ```
+  Or more specifically:
+  ```bash
+  sudo apt install qemu-system-riscv
+  ```
+  📝 You can replace apt with yum, dnf, or your distro’s package manager as needed.
+
+> In my environment, I compiled my own QEMU via its source code in Linux and downloaded the pre-built binaries in Windows.
+
+### Step 2. Build the Kernel
+- Use [this kernel repo](https://gitee.com/lunaneko/OpenCloudOS-Kernel.git) in Gitee and apply my config file in `config/`.
+  - Or you can use `make menuconfig` to make your own config.
+- Then use:
+```bash
+make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- KCFLAGS="-march=rv64gc_zicsr_zihintpause" -j $(nproc)
+```
+
+> Please rename the config file to `.config` before building. GitHub hides dotfiles.
 
 ### Step 3. Compile GRUB and Write grub.cfg
-Use your own GRUB build or [my config](grub.cfg) if you're lazy (like me sometimes).
+Use your own GRUB build or [my config](grub.cfg) if you're lazy (like me sometimes). *I won't tell you the reason why I don't teach you how to build this is that it's a totally bullshit... Ask for ChatGPT instead, I did it too, for multiple times.*
 
 ### Step 4. Build Filesystem via Buildroot
 Build a root filesystem and create an `.img` file:
@@ -47,7 +74,7 @@ You can either:
 - Compile your own EDK2 UEFI build
 - OR use my precompiled binaries from the `UEFI/` folder
 
-> ⚠️ You MUST **truncate** each UEFI firmware binary to 32MB.  
+> ⚠️ You MUST **truncate** each UEFI firmware binary to 32MB.
 > Use the `truncate_uefi.sh` script provided to truncate your UEFI firmware if you feel it's complex.
 
 ### Step 6. Boot!
