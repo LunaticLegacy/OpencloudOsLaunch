@@ -65,19 +65,17 @@ You may need to edit the scripts to match your environment (especially QEMU path
 ```bash
 luna@my_device:~/dnf/toml11/toml11/build$ ls /mnt/boot
 EFI  Image
+luna@my_device:~/rv-sp-test-mod$ ls /mnt/boot/EFI/
+BOOT
+luna@my_device:~/rv-sp-test-mod$ ls /mnt/boot/EFI/BOOT/
+bootriscv64.efi  grub.cfg
+
 luna@my_device:~/dnf/toml11/toml11/build$ ls /mnt/rootfs
 bin  boot  dev  etc  home  lib  lib64  linuxrc  lost+found  media  mnt  opt  proc  root  run  sbin  share  srv  sys  tmp  usr  var
 luna@my_device:~/dnf/toml11/toml11/build$
 ```
 
-`Image` in dir `/mnt/boot` *(the 1st partition, fat32)* is my OS kernel. `/mnt/rootfs` *(the 2nd partition, ext4)* is my filesystem generated via buildroot.
+`Image` in dir `/mnt/boot` *(the 1st partition, fat32)* is my OS kernel. `/mnt/rootfs` *(the 2nd partition, ext4)* is my filesystem generated via buildroot.:
 
-### After generated your filesystem via Buildroot:
-
-`mount` your filesystem disk, then **copy them** into the ext4 partition of your img file.
-
-### How about EDK2?
-
-After it was generated, you SHOULD truncate both of files into 32MB. I uploaded a script for truncate the EDK2 UEFI file. *Just relax, truncate them will not corrupt them. I had tested this.*
 
 
